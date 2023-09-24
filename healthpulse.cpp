@@ -3,7 +3,6 @@
 #include <vector>
 #include <map>
 #include <limits>
-#include <ctime>
 
 using namespace std;
 
@@ -17,8 +16,8 @@ public:
     string bmiCategory;
     vector<pair<double, string>> weightHistory;
     vector<string> dietPlanHistory;
-    map<string, vector<pair<string, int>>> weeklyExercisePlan;
-    map<string, double> weeklyProgress;
+    map<string, vector<string>> weeklyExercisePlan;
+    map<string, string> waterIntakeRecommendations;
 
     HealthPulse() : name(""), bodyweight(0.0), height(0.0), targetWeight(0.0), medicalHistory(""), bmiCategory("") {}
 
@@ -33,31 +32,48 @@ public:
         cout << "Hello, " << name << "!" << endl;
         cout << "Please provide some health-related information." << endl;
 
-        bodyweight = getPositiveInput("Enter your current bodyweight (in kilograms): ");
-        height = getPositiveInput("Enter your height (in meters): ");
-        targetWeight = getPositiveInput("Enter your target weight (in kilograms): ");
+        do {
+            cout << "Enter your current bodyweight (in kilograms): ";
+            if (!(cin >> bodyweight) || bodyweight <= 0) {
+                cout << "Invalid input. Please enter a positive number: ";
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            }
+        } while (bodyweight <= 0);
+
+        do {
+            cout << "Enter your height (in meters): ";
+            if (!(cin >> height) || height <= 0) {
+                cout << "Invalid input. Please enter a positive number: ";
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            }
+        } while (height <= 0);
+
+        do {
+            cout << "Enter your target weight (in kilograms): ";
+            if (!(cin >> targetWeight) || targetWeight <= 0) {
+                cout << "Invalid input. Please enter a positive number: ";
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            }
+        } while (targetWeight <= 0);
 
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
         cout << "Enter your medical history (if any): ";
         getline(cin, medicalHistory);
 
-        calculateBMI();
-        PersonalizedDietPlan();
-        initializeWeeklyExercisePlan();
-    }
+        // Check for specific medical conditions
+        if (medicalHistory.find("sugar") != string::npos || medicalHistory.find("diabetes") != string::npos) {
+            recommendLowSugarDiet();
+        } else {
+            calculateBMI();
+            PersonalizedDietPlan();
+            initializeWeeklyExercisePlan();
+        }
 
-    double getPositiveInput(const string& prompt) {
-        double input;
-        do {
-            cout << prompt;
-            if (!(cin >> input) || input <= 0) {
-                cout << "Invalid input. Please enter a positive number: ";
-                cin.clear();
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            }
-        } while (input <= 0);
-        return input;
+        recommendWaterIntake();
     }
 
     void calculateBMI() {
@@ -77,32 +93,50 @@ public:
     }
 
     string getCurrentDate() {
-        time_t now = time(0);
-        tm* ltm = localtime(&now);
-        string date = to_string(1900 + ltm->tm_year) + "-" + to_string(1 + ltm->tm_mon) + "-" + to_string(ltm->tm_mday);
-        return date;
+        return "2023-09-15";
+    }
+
+    void recommendLowSugarDiet() {
+        // Create a diet plan with low sugar recommendations
+        dietPlanHistory.clear();
+        dietPlanHistory.push_back("Limit your sugar intake to less than 25 grams per day.");
+        dietPlanHistory.push_back("Choose sugar-free or low-sugar alternatives.");
+        dietPlanHistory.push_back("Include plenty of fresh vegetables and lean proteins in your diet.");
+        dietPlanHistory.push_back("Consult a healthcare professional or nutritionist for a personalized diet plan.");
+
+        // Set the BMI category to "Special Dietary Needs"
+        bmiCategory = "Special Dietary Needs";
+
+        // Initialize an exercise plan
+        initializeExercisePlan("Low-Impact Exercises", "Low-Impact Exercises", "Low-Impact Exercises");
+
+        cout << "\nSince you have a history of sugar-related issues, we recommend a low-sugar diet plan for you." << endl;
     }
 
     void PersonalizedDietPlan() {
         dietPlanHistory.clear();
 
         if (bmiCategory == "Underweight") {
+            // Existing diet plan for underweight individuals
             dietPlanHistory.push_back("Include more whole grains, such as oats, brown rice, and quinoa.");
             dietPlanHistory.push_back("Consume protein-rich foods like lean meats (chicken, turkey), beans, and dairy (low-fat yogurt).");
             dietPlanHistory.push_back("Incorporate healthy fats like avocados, nuts, and olive oil for extra calories.");
             dietPlanHistory.push_back("Snack on nuts, seeds, and dried fruits for additional energy.");
         } else if (bmiCategory == "Healthy Weight") {
+            // Existing diet plan for healthy weight individuals
             dietPlanHistory.push_back("Explore a variety of colorful fruits and vegetables to ensure a wide range of nutrients.");
             dietPlanHistory.push_back("Incorporate whole grains like whole wheat bread, brown rice, and quinoa for sustained energy.");
             dietPlanHistory.push_back("Include lean protein sources such as chicken, fish, and tofu.");
             dietPlanHistory.push_back("Don't forget to stay hydrated with plenty of water throughout the day.");
         } else if (bmiCategory == "Overweight") {
+            // Existing diet plan for overweight individuals
             dietPlanHistory.push_back("Focus on portion control to manage calorie intake.");
             dietPlanHistory.push_back("Choose low-fat dairy products like skim milk and yogurt.");
             dietPlanHistory.push_back("Opt for lean protein sources such as grilled chicken and fish.");
             dietPlanHistory.push_back("Increase your intake of fibrous foods like vegetables and whole grains.");
             dietPlanHistory.push_back("Limit sugary drinks and snacks to reduce empty calories.");
-        } else if (bmiCategory == "Obese") {
+        } else if (bmiCategory == "Obese" || bmiCategory == "Special Dietary Needs") {
+            // Diet plan for obese individuals or those with special dietary needs
             dietPlanHistory.push_back("Consume a high-fiber diet with plenty of fruits, vegetables, and whole grains.");
             dietPlanHistory.push_back("Include lean protein sources like chicken, turkey, and fish.");
             dietPlanHistory.push_back("Avoid high-calorie, sugary, and processed foods.");
@@ -115,48 +149,50 @@ public:
         weeklyExercisePlan.clear();
 
         if (bmiCategory == "Underweight") {
-            initializeExercisePlan("Strength Training: Push-ups, Squats, Lunges", 5);
+            initializeExercisePlan("Yoga", "Pilates", "Bodyweight Exercises");
         } else if (bmiCategory == "Healthy Weight") {
-            initializeExercisePlan("Cardio: Running, Cycling\nStrength Training: Push-ups, Squats", 5);
-        } else if (bmiCategory == "Overweight") {
-            initializeExercisePlan("Cardio: Brisk Walking, Swimming, Cycling", 10);
+            initializeExercisePlan("Cardio", "Strength Training", "Yoga");
+        } else if (bmiCategory == "Overweight" || bmiCategory == "Special Dietary Needs") {
+            initializeExercisePlan("Cardio", "Swimming", "Cycling");
         } else if (bmiCategory == "Obese") {
-            initializeExercisePlan("Cardio: Swimming, Cycling, Running\nStrength Training: Bodyweight exercises", 15);
+            initializeExercisePlan("Cardio", "Strength Training", "Aqua Aerobics");
         }
     }
 
-    void initializeExercisePlan(const string& exerciseName, int repsOrDuration) {
-        vector<pair<string, int>> dailyExercises;
-
-        vector<string> days = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday" };
-        for (const string& day : days) {
-            dailyExercises.push_back(make_pair(exerciseName, repsOrDuration));
-        }
-
-        weeklyExercisePlan["Week 1"] = dailyExercises;
+    void initializeExercisePlan(const string& exercise1, const string& exercise2, const string& exercise3) {
+        weeklyExercisePlan["Week 1"].push_back(exercise1);
+        weeklyExercisePlan["Week 1"].push_back(exercise2);
+        weeklyExercisePlan["Week 1"].push_back(exercise3);
     }
 
-    void trackWeeklyProgress() {
-        cout << "Enter your weight for this week: ";
-        double currentWeight = getPositiveInput("");
-        weeklyProgress[getCurrentDate()] = currentWeight;
-
-        displayWeeklyProgress();
+    void recommendWaterIntake() {
+        waterIntakeRecommendations["Underweight"] = "Drink at least 8 glasses (64 ounces) of water per day.";
+        waterIntakeRecommendations["Healthy Weight"] = "Drink at least 8 glasses (64 ounces) of water per day.";
+        waterIntakeRecommendations["Overweight"] = "Drink at least 8 glasses (64 ounces) of water per day.";
+        waterIntakeRecommendations["Obese"] = "Drink at least 8 glasses (64 ounces) of water per day.";
+        waterIntakeRecommendations["Special Dietary Needs"] = "Drink at least 8 glasses (64 ounces) of water per day.";
     }
 
-    void displayWeeklyProgress() {
-        cout << "\nWeekly Progress for " << name << ":\n";
-        for (const auto& entry : weeklyProgress) {
-            cout << entry.first << ": " << entry.second << " kg" << endl;
+    void displayDietPlan() {
+        cout << "\nDiet Plan for " << name << " (BMI Category: " << bmiCategory << "):\n";
+        for (const auto& plan : dietPlanHistory) {
+            cout << "- " << plan << endl;
         }
     }
 
-    void generateMealPlan() {
-        // Implement meal plan generation based on dietary requirements and preferences.
-        // This is a placeholder for a more complex feature.
-        cout << "\nGenerating a personalized meal plan for " << name << "...\n";
-        // You can add your meal plan generation logic here.
-        cout << "Meal plan: Breakfast - Oatmeal, Lunch - Grilled Chicken Salad, Dinner - Baked Salmon" << endl;
+    void displayExercisePlan() {
+        cout << "\nExercise Plan for " << name << " (BMI Category: " << bmiCategory << "):\n";
+        for (const auto& plan : weeklyExercisePlan) {
+            cout << plan.first << ":\n";
+            for (const auto& exercise : plan.second) {
+                cout << "- " << exercise << endl;
+            }
+        }
+    }
+
+    void displayWaterIntakeRecommendation() {
+        cout << "\nWater Intake Recommendation for " << name << " (BMI Category: " << bmiCategory << "):\n";
+        cout << waterIntakeRecommendations[bmiCategory] << endl;
     }
 };
 
@@ -166,36 +202,17 @@ int main() {
     healthPulse.welcomeMessage();
     healthPulse.collectHealthData();
 
-    while (true) {
-        cout << "\nOptions:\n";
-        cout << "1. Track Weekly Progress\n";
-        cout << "2. Display Diet Plan\n";
-        cout << "3. Display Exercise Plan\n";
-        cout << "4. Generate Meal Plan\n";
-        cout << "5. Exit\n";
-        cout << "Choose an option: ";
+    cout << "\nUser Data:\n";
+    cout << "Name: " << healthPulse.name << endl;
+    cout << "Bodyweight: " << healthPulse.bodyweight << " kg\n";
+    cout << "Height: " << healthPulse.height << " meters\n";
+    cout << "Target Weight: " << healthPulse.targetWeight << " kg\n";
+    cout << "Medical History: " << healthPulse.medicalHistory << "\n";
+    cout << "BMI Category: " << healthPulse.bmiCategory << "\n";
 
-        int choice;
-        cin >> choice;
+    healthPulse.displayDietPlan();
+    healthPulse.displayExercisePlan();
+    healthPulse.displayWaterIntakeRecommendation();
 
-        switch (choice) {
-            case 1:
-                healthPulse.trackWeeklyProgress();
-                break;
-            case 2:
-                healthPulse.displayDietPlan();
-                break;
-            case 3:
-                healthPulse.displayExercisePlan();
-                break;
-            case 4:
-                healthPulse.generateMealPlan();
-                break;
-            case 5:
-                return 0;
-            default:
-                cout << "Invalid choice. Please choose a valid option.\n";
-                break;
-        }
-    }
+    return 0;
 }
