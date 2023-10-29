@@ -22,23 +22,16 @@ public:
             "Vegetables (e.g., carrots, broccoli)",
             "Lean proteins (e.g., chicken, fish)",
             "Grains (e.g., rice, quinoa)",
-            "Dairy (if not allergic) or dairy alternatives (e.g., soy milk)",
-        };
-
-        allergySafeFoods["Gluten Allergy"] = {
-            "Gluten-free grains (e.g., rice, quinoa)",
-            "Fruits (e.g., apples, bananas)",
-            "Vegetables (e.g., carrots, broccoli)",
-            "Lean proteins (e.g., chicken, fish)",
-            "Dairy (if not allergic) or dairy alternatives (e.g., soy milk)",
+            "Dairy (if not allergic) or dairy alternatives (e.g., soy milk)"
         };
     }
 
     void initializeBmiCategories() {
-         bmiCategories = {
+        bmiCategories = {
             "Underweight",
             "Healthy Weight",
-            "Overweight"
+            "Overweight",
+            "Obese"
         };
     }
 
@@ -53,7 +46,7 @@ public:
     }
 
     void displayBmiCategoriesMenu() {
-       cout << "Select your BMI category:" << endl;
+        cout << "Select your BMI category:" << endl;
         int i = 1;
         for (const string& category : bmiCategories) {
             cout << i << ". " << category << endl;
@@ -63,7 +56,7 @@ public:
     }
 
     void displayDietPlan(const string& allergy, const string& bmiCategory) {
-     cout << "Diet Plan for " << allergy << " Allergy and " << bmiCategory << " BMI Category:\n";
+        cout << "Diet Plan for " << allergy << " Allergy and " << bmiCategory << " BMI Category:\n";
         if (allergySafeFoods.find(allergy) != allergySafeFoods.end()) {
             cout << "Safe foods for your allergy:" << endl;
             for (const string& food : allergySafeFoods[allergy]) {
@@ -74,7 +67,6 @@ public:
         }
     }
 };
-
 
 class HealthPulse {
 public:
@@ -163,6 +155,7 @@ public:
     }
 
     string getCurrentDate() {
+        // Implement code to get the actual current date here.
         return "2023-09-15";
     }
 
@@ -177,7 +170,6 @@ public:
         // Set the BMI category to "Special Dietary Needs"
         bmiCategory = "Special Dietary Needs";
 
-        // Initialize an exercise plan
         initializeExercisePlan("Low-Impact Exercises", "Low-Impact Exercises", "Low-Impact Exercises");
 
         cout << "\nSince you have a history of sugar-related issues, we recommend a low-sugar diet plan for you." << endl;
@@ -187,26 +179,22 @@ public:
         dietPlanHistory.clear();
 
         if (bmiCategory == "Underweight") {
-            // Existing diet plan for underweight individuals
             dietPlanHistory.push_back("Include more whole grains, such as oats, brown rice, and quinoa.");
             dietPlanHistory.push_back("Consume protein-rich foods like lean meats (chicken, turkey), beans, and dairy (low-fat yogurt).");
             dietPlanHistory.push_back("Incorporate healthy fats like avocados, nuts, and olive oil for extra calories.");
             dietPlanHistory.push_back("Snack on nuts, seeds, and dried fruits for additional energy.");
         } else if (bmiCategory == "Healthy Weight") {
-            // Existing diet plan for healthy weight individuals
             dietPlanHistory.push_back("Explore a variety of colorful fruits and vegetables to ensure a wide range of nutrients.");
             dietPlanHistory.push_back("Incorporate whole grains like whole wheat bread, brown rice, and quinoa for sustained energy.");
             dietPlanHistory.push_back("Include lean protein sources such as chicken, fish, and tofu.");
             dietPlanHistory.push_back("Don't forget to stay hydrated with plenty of water throughout the day.");
         } else if (bmiCategory == "Overweight") {
-            // Existing diet plan for overweight individuals
             dietPlanHistory.push_back("Focus on portion control to manage calorie intake.");
             dietPlanHistory.push_back("Choose low-fat dairy products like skim milk and yogurt.");
             dietPlanHistory.push_back("Opt for lean protein sources such as grilled chicken and fish.");
             dietPlanHistory.push_back("Increase your intake of fibrous foods like vegetables and whole grains.");
             dietPlanHistory.push_back("Limit sugary drinks and snacks to reduce empty calories.");
         } else if (bmiCategory == "Obese" || bmiCategory == "Special Dietary Needs") {
-            // Diet plan for obese individuals or those with special dietary needs
             dietPlanHistory.push_back("Consume a high-fiber diet with plenty of fruits, vegetables, and whole grains.");
             dietPlanHistory.push_back("Include lean protein sources like chicken, turkey, and fish.");
             dietPlanHistory.push_back("Avoid high-calorie, sugary, and processed foods.");
@@ -266,7 +254,7 @@ public:
     }
 
 public:
-    void runDietPlanner() {
+    void runDietPlanner(){
         DietPlanner dietPlanner;
 
         while (true) {
@@ -300,9 +288,9 @@ public:
                 continue;
             }
 
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Clear input buffer
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');  
 
-            // Get the selected allergy and BMI category
+            
             string selectedAllergy;
             int i = 1;
             for (const auto& allergy : dietPlanner.allergySafeFoods) {
@@ -315,13 +303,11 @@ public:
 
             string selectedBmiCategory = dietPlanner.bmiCategories[bmiChoice - 1];
 
-            // Display the diet plan
+            
             dietPlanner.displayDietPlan(selectedAllergy, selectedBmiCategory);
         }
     }
 };
-
-
 
 int main() {
     HealthPulse healthPulse;
@@ -337,10 +323,9 @@ int main() {
     cout << "Medical History: " << healthPulse.medicalHistory << "\n";
     cout << "BMI Category: " << healthPulse.bmiCategory << "\n";
 
+    healthPulse.runDietPlanner(); 
     healthPulse.displayDietPlan();
     healthPulse.displayExercisePlan();
     healthPulse.displayWaterIntakeRecommendation();
-    healthPulse.runDietPlanner(); 
-
     return 0;
 }
