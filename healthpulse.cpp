@@ -17,73 +17,13 @@ public:
     }
 
     void initializeAllergySafeFoods() {
-    allergySafeFoods["Nut Allergy"] = {
-        "Fruits (e.g., apples, bananas)",
-        "Vegetables (e.g., carrots, broccoli)",
-        "Lean proteins (e.g., chicken, fish)",
-        "Grains (e.g., rice, quinoa)",
-        "Dairy (if not allergic) or dairy alternatives (e.g., soy milk)"
-    };
-
-    allergySafeFoods["Wheat and Gluten Allergy"] = {
-        "Gluten-free grains (e.g., rice, quinoa, corn)",
-        "Vegetables (e.g., spinach, kale)",
-        "Lean proteins (e.g., poultry, fish)",
-        "Dairy alternatives (e.g., almond milk, coconut milk)"
-    };
-
-    allergySafeFoods["Dairy Allergy"] = {
-        "Fruits (e.g., apples, bananas)",
-        "Vegetables (e.g., spinach, broccoli)",
-        "Lean proteins (e.g., chicken, fish)",
-        "Grains (e.g., rice, quinoa)",
-        "Dairy alternatives (e.g., almond milk, coconut milk, soy milk)"
-    };
-
-    allergySafeFoods["Shellfish Allergy"] = {
-        "Poultry (e.g., chicken, turkey)",
-        "Lean meats (e.g., beef, pork)",
-        "Vegetables (e.g., carrots, peas)",
-        "Grains (e.g., rice, potatoes)"
-    };
-
-    allergySafeFoods["Egg Allergy"] = {
-        "Lean proteins (e.g., chicken, fish)",
-        "Vegetables (e.g., spinach, kale)",
-        "Dairy alternatives (e.g., almond milk, coconut milk)",
-        "Legumes (e.g., beans, lentils)"
-    };
-
-    allergySafeFoods["Soy Allergy"] = {
-        "Lean proteins (e.g., chicken, turkey)",
-        "Dairy alternatives (e.g., almond milk, coconut milk)",
-        "Legumes (e.g., beans, lentils)",
-        "Grains (e.g., rice, quinoa)"
-    };
-
-    allergySafeFoods["Fish Allergy"] = {
-        "Poultry (e.g., chicken, turkey)",
-        "Lean meats (e.g., beef, pork)",
-        "Vegetables (e.g., carrots, peas)",
-        "Grains (e.g., rice, potatoes)"
-    };
-
-    allergySafeFoods["Sesame Allergy"] = {
-        "Fruits (e.g., apples, bananas)",
-        "Vegetables (e.g., carrots, broccoli)",
-        "Lean proteins (e.g., chicken, fish)",
-        "Grains (e.g., rice, quinoa)",
-        "Dairy (if not allergic) or dairy alternatives (e.g., soy milk)"
-    };
-
-    allergySafeFoods["Corn Allergy"] = {
-        "Gluten-free grains (e.g., rice, quinoa, oats)",
-        "Vegetables (e.g., spinach, kale)",
-        "Lean proteins (e.g., poultry, fish)",
-        "Dairy alternatives (e.g., almond milk, coconut milk)"
-    };
-
-
+        allergySafeFoods["Nut Allergy"] = {
+            "Fruits (e.g., apples, bananas)",
+            "Vegetables (e.g., carrots, broccoli)",
+            "Lean proteins (e.g., chicken, fish)",
+            "Grains (e.g., rice, quinoa)",
+            "Dairy (if not allergic) or dairy alternatives (e.g., soy milk)"
+        };
     }
 
     void initializeBmiCategories() {
@@ -102,7 +42,7 @@ public:
             cout << i << ". " << allergy.first << endl;
             i++;
         }
-        cout << "0.None" << endl;
+        cout << "0. Exit" << endl;
     }
 
     void displayBmiCategoriesMenu() {
@@ -314,7 +254,7 @@ public:
     }
 
 public:
-    void runDietPlanner(){
+    void runDietPlanner() {
         DietPlanner dietPlanner;
 
         while (true) {
@@ -348,9 +288,8 @@ public:
                 continue;
             }
 
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');  
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-            
             string selectedAllergy;
             int i = 1;
             for (const auto& allergy : dietPlanner.allergySafeFoods) {
@@ -363,7 +302,6 @@ public:
 
             string selectedBmiCategory = dietPlanner.bmiCategories[bmiChoice - 1];
 
-            
             dietPlanner.displayDietPlan(selectedAllergy, selectedBmiCategory);
         }
     }
@@ -383,9 +321,10 @@ int main() {
     cout << "Medical History: " << healthPulse.medicalHistory << "\n";
     cout << "BMI Category: " << healthPulse.bmiCategory << "\n";
 
-    healthPulse.runDietPlanner(); 
     healthPulse.displayDietPlan();
     healthPulse.displayExercisePlan();
     healthPulse.displayWaterIntakeRecommendation();
+    healthPulse.runDietPlanner();
+
     return 0;
 }
